@@ -1,8 +1,14 @@
+//Modules
 const express = require("express");
-const DbService = require("./Database/DatabaseService");
 
+//Classes
+require("./Classes/Person");
+require("./Classes/Database");
+
+//Main
 const app = express();
 const PORT = process.env.PORT || 5000;
+const PersonDB = new Database("../Database/PersonDB.json");
 
 app.use(express.static(__dirname + "Static"))
 
@@ -12,22 +18,15 @@ app.get("/", (req, res) => {
 })
 
 //Post
-app.post("/api/v1/signup", (req,res) => {
-    const Username = req.body.Username;
-    const Password = req.body.Password;
+app.post("/api/v1/CreatePerson", (req,res) => {
+    const AccountName = req.body.AccountName;
 
-    if(!Username && !Password){
-        if(DbService.GetAsync(Username)){
-            DbService.SetAsync(Username, {Username: Username, Password: Password, Balance: 0})
-        } else {
-            res.status(400);
-            res.send("Username has been taken")
-        }
+    if (AccountName){
+        const Person = new Person(AccountName);
+        PersonDB.AddData()
     } else {
-        res.status(400);
-        res.send("No username and password");
+        
     }
-
 })
 app.listen(PORT, () => {
     console.log(`Connected on port: ${PORT}`);
